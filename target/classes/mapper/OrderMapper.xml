@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.tom.dao.OrderMapper">
+
+    <resultMap id="orderMap" type="cn.tom.entity.Order">
+        <id column="ordid" property="ordid"></id>
+        <result column="uid" property="uid"></result>
+        <result column="amount" property="amount"></result>
+        <result column="pay_status" property="pay_status"></result>
+        <result column="shipno" property="shipno"></result>
+        <result column="ship_status" property="ship_status"></result>
+        <result column="ship2name" property="ship2name"></result>
+        <result column="ship2phone" property="ship2phone"></result>
+        <result column="ship2addr" property="ship2addr"></result>
+        <result column="shipper" property="shipper"></result>
+        <result column="tship" property="tship"></result>
+        <result column="tsign" property="tsign"></result>
+        <result column="tcreate" property="tcreate"></result>
+        <collection property="orderItem" ofType="cn.tom.entity.OrderItem" column="ordid" select="selectOrderItemsByOrderId">
+            <result column="ordid" property="ordid"></result>
+            <result column="itemid" property="itemid"></result>
+            <result column="num" property="num"></result>
+            <result column="price" property="price"></result>
+            <association property="book" javaType="cn.tom.entity.BookT">
+                <result column="id" property="id"></result>
+                <result column="name" property="name"></result>
+                <result column="sn" property="sn"></result>
+                <result column="bprice" property="price"></result>
+                <result column="maker" property="maker"></result>
+                <result column="tmake" property="tmake"></result>
+                <result column="pic" property="pic"></result>
+                <result column="author" property="author"></result>
+                <result column="salenum" property="salenum"></result>
+                <result column="stock" property="stock"></result>
+                <result column="info" property="info"></result>
+                <association property="type" javaType="cn.tom.entity.Type">
+                    <result column="id" property="id"></result>
+                    <result column="tname" property="name"></result>
+                </association>
+            </association>
+        </collection>
+    </resultMap>
+
+    <resultMap id="orderMapA" type="cn.tom.entity.OrderAdm">
+        <id column="ordid" property="ordid"></id>
+        <result column="amount" property="amount"></result>
+        <result column="pay_status" property="pay_status"></result>
+        <result column="ship_status" property="ship_status"></result>
+        <result column="shipno" property="shipno"></result>
+        <result column="shipper" property="shipper"></result>
+        <result column="tship" property="tship"></result>
+        <result column="tsign" property="tsign"></result>
+        <result column="tcreate" property="tcreate"></result>
+        <association property="user" javaType="cn.tom.entity.UserP">
+        <result column="id" property="id"></result>
+        <result column="account" property="account"></result>
+        <result column="nickname" property="nickname"></result>
+        <result column="addr" property="addr"></result>
+        <result column="phone" property="phone"></result>
+        </association>
+        <collection property="orderItem" ofType="cn.tom.entity.OrderItem" column="ordid" select="selectOrderItemsByOrderId">
+            <result column="ordid" property="ordid"></result>
+            <result column="itemid" property="itemid"></result>
+            <result column="num" property="num"></result>
+            <result column="price" property="price"></result>
+            <association property="book" javaType="cn.tom.entity.BookT">
+                <result column="id" property="id"></result>
+                <result column="name" property="name"></result>
+                <result column="sn" property="sn"></result>
+                <result column="bprice" property="price"></result>
+                <result column="maker" property="maker"></result>
+                <result column="tmake" property="tmake"></result>
+                <result column="pic" property="pic"></result>
+                <result column="author" property="author"></result>
+                <result column="salenum" property="salenum"></result>
+                <result column="stock" property="stock"></result>
+                <result column="info" property="info"></result>
+                <association property="type" javaType="cn.tom.entity.Type">
+                    <result column="id" property="id"></result>
+                    <result column="tname" property="name"></result>
+                </association>
+            </association>
+        </collection>
+    </resultMap>
+
+    <resultMap id="orderMap1" type="cn.tom.entity.OrderItem">
+        <result column="ordid" property="ordid"></result>
+        <result column="itemid" property="itemid"></result>
+        <result column="num" property="num"></result>
+        <result column="price" property="price"></result>
+        <association property="book" javaType="cn.tom.entity.BookT">
+            <result column="id" property="id"></result>
+            <result column="name" property="name"></result>
+            <result column="sn" property="sn"></result>
+            <result column="bprice" property="price"></result>
+            <result column="maker" property="maker"></result>
+            <result column="tmake" property="tmake"></result>
+            <result column="pic" property="pic"></result>
+            <result column="author" property="author"></result>
+            <result column="salenum" property="salenum"></result>
+            <result column="stock" property="stock"></result>
+            <result column="info" property="info"></result>
+            <association property="type" javaType="cn.tom.entity.Type">
+                <result column="id" property="id"></result>
+                <result column="tname" property="name"></result>
+            </association>
+        </association>
+    </resultMap>
+
+    <select id="selectOrderItemsByOrderId" parameterType="int" resultMap="orderMap1">
+  SELECT i.itemid,i.ordid,i.bookid,i.num,i.price
+        ,b.name,b.id,b.sn,b.price AS bprice,b.maker,b.tmake,b.typeid,b.pic,b.author,b.salenum,b.stock,b.info
+         FROM t_book b,t_orditem i
+         WHERE i.bookid = b.id
+          AND ordid = #{ordid}
+</select>
+
+
+    <select id="findAllOrder" parameterType="map" resultMap="orderMap">
+        SELECT
+       *
+        FROM t_order
+        WHERE 1=1
+        <if test="uid !=null">AND uid = #{uid}</if>
+        <if test="payStatus !=null">AND pay_status = #{payStatus}</if>
+        <if test="shipStatus !=null">AND ship_status = #{shipStatus}</if>
+        <if test="days !=null">AND tcreate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)</if>
+        <if test="start !=null and pageline !=null">LIMIT #{start},#{pageline};</if>
+    </select>
+
+    <select id="getCount" parameterType="map" resultType="int">
+        select count(*)
+        from t_order
+        WHERE 1=1
+        <if test="uid !=null">AND uid = #{uid}</if>
+        <if test="payStatus !=null">AND pay_status = #{payStatus}</if>
+        <if test="shipStatus !=null">AND ship_status = #{shipStatus}</if>
+        <if test="days !=null">AND tcreate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)</if>
+    </select>
+
+    <select id="getCountAdm" parameterType="map" resultType="int">
+        select count(*)
+        FROM t_order o
+        JOIN t_user u ON o.uid = u.id
+        WHERE 1=1
+        <if test="nickname !=null and nickname!=''">AND u.nickname = #{nickname}</if>
+        <if test="phone !=null and phone!=''">AND u.phone = #{phone}</if>
+        <if test="account !=null and account != ''" >AND u.account = #{account}</if>
+        <if test="uid !=null">AND o.uid = #{uid}</if>
+        <if test="payStatus !=null">AND o.pay_status = #{payStatus}</if>
+        <if test="shipStatus !=null">AND o.ship_status = #{shipStatus}</if>
+        <if test="days !=null">AND o.tcreate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)</if>
+    </select>
+
+    <select id="findOne" parameterType="int" resultMap="orderMap">
+        SELECT * FROM t_order
+        WHERE  ordid = #{ordid}
+    </select>
+    <insert id="addOrder" parameterType="cn.tom.entity.Order" useGeneratedKeys="false">
+        insert into t_order(uid,amount,pay_status,tpay,ship_status,shipno,ship2name,ship2phone,ship2addr,shipper,
+        tship,tsign,tcreate)
+        values (#{uid},#{amount},#{pay_status},#{tpay},#{ship_status},#{shipno},#{ship2name},#{ship2phone},#{ship2addr}
+        ,#{shipper},#{tship},#{tsign},#{tcreate})
+    </insert>
+
+    <select id="findAddOrdid" resultType="int">
+     SELECT LAST_INSERT_ID();
+    </select>
+
+    <insert id="addOrderItem" parameterType="cn.tom.entity.OrderItem">
+        insert into t_orditem(itemid,ordid,bookid,num,price)
+        values (#{itemid},#{ordid},#{book.id},#{num},#{price})
+    </insert>
+
+    <update id="addPay"  parameterType="map">
+        update t_order
+        <set>
+            <if test="tpay != null">tpay = #{tpay},</if>
+            <if test="ordid != null">pay_status=1,</if>
+        </set>
+        where ordid=#{ordid}
+    </update>
+
+    <update id="doSign"  parameterType="map">
+        update t_order
+        <set>
+            <if test="tsign != null">tsign = #{tsign},</if>
+            <if test="ordid != null">ship_status=2,</if>
+        </set>
+        where ordid=#{ordid}
+    </update>
+
+    <update id="updateShip"  parameterType="map">
+        update t_order
+        <set>
+            <if test="shipno != null and shipno!=''">shipno = #{shipno},</if>
+            <if test="shipper != null and shipper!=''">shipper = #{shipper},</if>
+            <if test="tship != null">tship = #{tship},</if>
+            <if test="ordid != null">ship_status=1,</if>
+        </set>
+        where ordid=#{ordid}
+    </update>
+    <select id="findAllOrderAdm" parameterType="map" resultMap="orderMapA">
+        SELECT
+        o.ordid,o.amount,o.pay_status,o.tpay,o.uid,o.ship_status,o.shipno,o.tship,o.tsign,o.tcreate,
+        u.id,u.account,u.nickname,u.addr,u.phone
+        FROM t_order o,t_user u
+        WHERE o.uid = u.id
+        <if test="nickname !=null and nickname!=''">AND u.nickname = #{nickname}</if>
+        <if test="phone !=null and phone!=''">AND u.phone = #{phone}</if>
+        <if test="account !=null and account != ''" >AND u.account = #{account}</if>
+        <if test="uid !=null">AND o.uid = #{uid}</if>
+        <if test="payStatus !=null">AND o.pay_status = #{payStatus}</if>
+        <if test="shipStatus !=null">AND o.ship_status = #{shipStatus}</if>
+        <if test="days !=null">AND o.tcreate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)</if>
+        <if test="start !=null and pageline !=null">LIMIT #{start},#{pageline};</if>
+    </select>
+</mapper>

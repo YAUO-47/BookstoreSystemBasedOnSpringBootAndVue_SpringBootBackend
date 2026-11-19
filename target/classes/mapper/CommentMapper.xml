@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.tom.dao.CommentMapper" >
+
+    <select id="findAllComment" resultType="cn.tom.entity.Comment">
+     SELECT * FROM t_comment where bookid=#{bookid};
+    </select>
+
+
+    <insert id="addComment" parameterType="cn.tom.entity.Comment">
+        insert into t_comment(uid,bookid,content,nickname,rate,img,tpost)
+        values (#{uid},#{bookid},#{content},#{nickname},#{rate},#{img},#{tpost})
+    </insert>
+</mapper>

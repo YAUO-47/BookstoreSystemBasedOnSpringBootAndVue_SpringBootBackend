@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.tom.dao.TypeMapper" >
+
+    <select id="findAllType" resultType="cn.tom.entity.Type">
+     SELECT * FROM t_type WHERE isdel=0;
+    </select>
+
+    <select id="findOneType" parameterType="int" resultType="cn.tom.entity.Type">
+     SELECT * FROM t_type WHERE id=#{id};
+    </select>
+
+    <insert id="addType" parameterType="cn.tom.entity.Type">
+        insert into t_type(name,pid,prio,isdel)
+        values (#{name},#{pid},#{prio},#{isdel})
+    </insert>
+
+    <update id="updateType" parameterType="cn.tom.entity.Type">
+        update t_type
+        <set>
+            <if test="name != null and name!=''">name = #{name},</if>
+            <if test="prio != null and prio!=''">prio = #{prio},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="removeType"  parameterType="int">
+        update t_type
+        SET  isdel =1
+        where id=#{id}
+    </update>
+</mapper>

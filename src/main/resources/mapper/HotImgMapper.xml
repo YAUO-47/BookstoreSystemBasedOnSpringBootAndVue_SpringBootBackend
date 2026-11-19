@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.tom.dao.HotImgMapper" >
+
+    <select id="findAllHot" resultType="cn.tom.entity.HotImg">
+     SELECT * FROM t_hot;
+    </select>
+
+
+    <insert id="addHot" parameterType="cn.tom.entity.HotImg">
+        insert into t_hot(memo,picture,hot,type)
+        values (#{memo},#{picture},#{hot},#{type})
+    </insert>
+
+    <update id="updateHot" parameterType="cn.tom.entity.HotImg">
+        update t_hot
+        <set>
+            <if test="memo != null and memo!=''">memo = #{memo},</if>
+            <if test="hot != null and hot!=''">hot = #{hot},</if>
+            <if test="type != null and type!=''">type = #{type},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="removeHot"  parameterType="int">
+        delete from t_hot Where id=#{id}
+    </delete>
+</mapper>

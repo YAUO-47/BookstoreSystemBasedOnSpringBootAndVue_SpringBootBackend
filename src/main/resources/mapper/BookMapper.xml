@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.tom.dao.BookMapper" >
+
+    <resultMap id="orderMap" type="cn.tom.entity.BookT">
+        <id column="id" property="id"></id>
+        <result column="sn" property="sn"></result>
+        <result column="name" property="name"></result>
+        <result column="author" property="author"></result>
+        <result column="maker" property="maker"></result>
+        <result column="tmake" property="tmake"></result>
+        <result column="pic" property="pic"></result>
+        <result column="price" property="price"></result>
+        <result column="info" property="info"></result>
+        <result column="salenum" property="salenum"></result>
+        <result column="stock" property="stock"></result>
+        <association property="type">
+            <result column="tid" property="id"></result>
+            <result column="tname" property="name"></result>
+        </association>
+    </resultMap>
+
+    <select id="findAllBook" parameterType="map" resultType="cn.tom.entity.Book">
+     SELECT * FROM t_book
+        WHERE 1=1
+        <if test="typeid !=null and typeid !=0">AND typeid = #{typeid}</if>
+        <if test="start !=null and pageline !=null"> LIMIT #{start},#{pageline};</if>
+    </select>
+
+    <select id="findAllBookByPid" parameterType="map" resultType="cn.tom.entity.Book">
+        SELECT t_book.id,t_book.name,t_book.sn,t_book.price
+        ,t_book.info,t_book.maker,t_book.author
+        ,t_type.pid,t_book.stock,t_book.pic
+        FROM t_book,t_type
+        WHERE t_book.typeid = t_type.id
+        <if test="pid !=null and pid !=0">AND t_type.pid = #{pid}</if>
+        <if test="start !=null and pageline !=null"> LIMIT #{start},#{pageline};</if>
+    </select>
+
+    <select id="findAllBookByKey" parameterType="map" resultType="cn.tom.entity.Book">
+        SELECT * FROM t_book
+        WHERE 1=1
+        <if test="key!=null and key !=''">AND name LIKE CONCAT('%', #{key}, '%')</if>
+        <if test="start !=null and pageline !=null"> LIMIT #{start},#{pageline};</if>
+    </select>
+
+    <select id="findOneBook" parameterType="int" resultMap="orderMap">
+        SELECT b.id,b.name,b.sn,b.author,b.tmake,b.maker,b.info,b.stock,b.price,b.salenum,b.pic,t.name AS tname,t.id AS tid FROM t_book b,t_type t
+        WHERE b.typeid = t.id
+        AND b.id = #{id}
+    </select>
+
+    <select id="getCount" parameterType="map" resultType="int">
+     select count(*)
+        from t_book
+        WHERE 1=1
+        <if test="typeid !=null and typeid !=0">AND typeid = #{typeid}</if>
+        <if test="key!=null and key !=''">AND name LIKE CONCAT('%', #{key}, '%')</if>
+    </select>
+
+    <select id="getCountByMainType" parameterType="Integer" resultType="int">
+        SELECT COUNT(*)
+        FROM t_book
+        JOIN t_type ON t_book.typeid = t_type.id
+        WHERE 1=1
+        <if test="typeid !=null and typeid !=0">AND t_type.pid = #{pid}</if>
+    </select>
+
+
+    <insert id="addBook" parameterType="cn.tom.entity.Book">
+        insert into t_book(name,sn,price,maker,author,tmake,stock,typeid,info)
+        values (#{name},#{sn},#{price},#{maker},#{author},#{tmake},#{stock},#{typeid},#{info})
+    </insert>
+
+    <update id="updateBook" parameterType="cn.tom.entity.Book">
+        update t_book
+        <set>
+            <if test="name != null and name!=''">name = #{name},</if>
+            <if test="sn != null and sn!=''">sn = #{sn},</if>
+            <if test="price != null and price!=0">price = #{price},</if>
+            <if test="maker != null and maker!=''">maker = #{maker},</if>
+            <if test="author != null and author!=''">author = #{author},</if>
+            <if test="tmake != null">tmake = #{tmake},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="salenum != null">salenum = #{salenum},</if>
+            <if test="typeid != null and typeid!=0">typeid = #{typeid},</if>
+            <if test="info != null and info!=''">info = #{info},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>
